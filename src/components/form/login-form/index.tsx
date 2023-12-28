@@ -28,7 +28,7 @@ export function LoginForm() {
 
   async function onSubmit(data: Login) {
     try {
-      await fetch("http://localhost:3000/api/auth/login", {
+      await fetch("api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
