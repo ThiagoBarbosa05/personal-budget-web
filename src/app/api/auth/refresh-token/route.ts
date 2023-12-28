@@ -48,8 +48,4 @@ export async function POST(req: NextRequest, res: NextResponse) {
   } catch (err) {
     return new Response('error', {status: 400})
   }
-
-  console.log(refreshToken)
-
-  return Response.json({})
 }
