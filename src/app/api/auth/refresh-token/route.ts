@@ -46,7 +46,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       status: 200
     })
   } catch (err) {
-    return new Response('error', err)
+    return new Response('error', {status: 400})
   }
 
   console.log(refreshToken)
