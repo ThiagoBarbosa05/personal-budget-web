@@ -1,6 +1,5 @@
 import { decode } from "jsonwebtoken";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
