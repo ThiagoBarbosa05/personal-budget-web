@@ -5,6 +5,7 @@ import { DropdownMenuTransaction } from "@/components/dropdown-menu-transaction"
 import { EditBudgetDialog } from "@/components/edit-budget";
 import EditTransactionDialog from "@/components/edit-transaction";
 import TransferValueDialog from "@/components/tranfer-value";
+import Transaction from "@/components/transactions";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,10 +17,12 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { BudgetById } from "@/types";
 import { formatCurrency } from "@/utils/format-currency";
 import {
   CurrencyCircleDollar,
@@ -28,30 +31,34 @@ import {
   ShuffleAngular,
   Trash,
 } from "@phosphor-icons/react/dist/ssr";
+import dayjs from "dayjs";
+import { cookies } from "next/headers";
 
-async function getBudgetById(id: string, userId: string) {
+async function getBudgetById(id: string, token?: string): Promise<BudgetById> {
   try {
+    const response = await fetch(
+      `https://personal-budget-api-3285.onrender.com/envelopes/${id}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+      }
+    );
 
-    const response = await fetch(`http://localhost:4000/envelopes/${id}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Cookie: `userId=${userId}`
-      },
-      credentials: 'include'
-    })
-
-    const budget = await response.json()
-
-    return budget
-
+    return response.json();
   } catch (err) {
-    throw new Error()
+    throw new Error();
   }
 }
 
-export default async function page({params}: {params: {id: string}}) {
-  
- 
+export default async function page({ params }: { params: { id: string } }) {
+  const token = cookies().get("next_token")?.value;
+
+  const { envelope } = await getBudgetById(params.id, token);
+
+  const createdAt = dayjs(envelope.created_at).format("D MMMM YYYY");
 
   return (
     <div className="px-6 py-6 max-w-7xl mx-auto">
@@ -60,7 +67,7 @@ export default async function page({params}: {params: {id: string}}) {
           <CardHeader>
             <div className="flex items-center justify-between">
               <span className="leading-6 font-bold lg:text-2xl">
-                Budget example
+                {envelope.description}
               </span>
               <DeleteBudgetDialog>
                 <Button
@@ -75,10 +82,10 @@ export default async function page({params}: {params: {id: string}}) {
           </CardHeader>
           <CardContent>
             <strong className="text-2xl block mb-1 leading-6 lg:text-4xl">
-              {formatCurrency(1234.56)}
+              {formatCurrency(envelope.amount)}
             </strong>
             <span className="text-zinc-400 text-sm">
-              Created at: 05-03-2023
+              Created at: {createdAt}
             </span>
           </CardContent>
           <CardFooter className="flex items-center gap-2">
@@ -133,46 +140,7 @@ export default async function page({params}: {params: {id: string}}) {
           Here are all the transactions in the budget $example
         </span>
         {/* transactions */}
-        <Table className="mt-6 min-w-[640px]">
-          <TableHeader>
-            <TableRow>
-              <TableHead>Created at</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Payment recipient</TableHead>
-              <TableHead>Payment amount</TableHead>
-              <TableHead></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-              <TableRow key={i}>
-                <TableCell>2022-05-03</TableCell>
-                <TableCell>Pending</TableCell>
-                <TableCell>internet</TableCell>
-                <TableCell>{formatCurrency(120.39)}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <EditTransactionDialog>
-                      <Button size="icon" variant="outline">
-                        <PencilSimpleLine size={16} />
-                      </Button>
-                    </EditTransactionDialog>
-
-                    <DeleteTransactionAlert>
-                      <Button
-                        className="text-destructive"
-                        size="icon"
-                        variant="outline"
-                      >
-                        <Trash size={16} />
-                      </Button>
-                    </DeleteTransactionAlert>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+          <Transaction budget={envelope} />
         {/* transactions */}
       </section>
     </div>

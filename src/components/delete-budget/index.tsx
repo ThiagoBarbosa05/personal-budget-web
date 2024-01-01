@@ -1,4 +1,5 @@
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
+import DeleteButton from "./delete-button";
 
 export default function DeleteBudgetDialog({children}: {children: React.ReactNode}) {
   return (
@@ -13,10 +14,7 @@ export default function DeleteBudgetDialog({children}: {children: React.ReactNod
             budget.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
-        </AlertDialogFooter>
+        <DeleteButton />
       </AlertDialogContent>
     </AlertDialog>
   )

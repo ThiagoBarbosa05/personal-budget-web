@@ -17,3 +17,4 @@ export interface BudgetById {
     updated_at: string
   }
 }
+

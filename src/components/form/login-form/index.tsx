@@ -7,6 +7,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
+import { InvalidCredentialsError } from "@/utils/validation-error";
+import { useState } from "react";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -18,6 +20,8 @@ export type Login = z.infer<typeof loginSchema>;
 export function LoginForm() {
   const router = useRouter();
 
+  const [isInvalidCredentials, setIsInvalidCredentials] = useState('')
+
   const {
     handleSubmit,
     register,
@@ -28,7 +32,7 @@ export function LoginForm() {
 
   async function onSubmit(data: Login) {
     try {
-      await fetch("api/auth/login", {
+      const response = await fetch("http://localhost:3000/api/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -37,11 +41,15 @@ export function LoginForm() {
         credentials: "include",
       });
 
-      
+      if(!response.ok) {
+        throw new InvalidCredentialsError()
+      }
 
       router.refresh()
     } catch (err) {
-      console.log(err);
+      if(err instanceof InvalidCredentialsError) {
+        setIsInvalidCredentials(err.message)
+      }
     }
 
   }
@@ -76,6 +84,10 @@ export function LoginForm() {
             {errors.password?.message}
           </span>
         </div>
+        {isInvalidCredentials ? <div className="bg-destructive p-1 rounded-sm text-center">
+          <span className="text-sm">{isInvalidCredentials}</span>
+        </div> : ''}
+        
 
         <Button disabled={isSubmitting}>
         {isSubmitting ? (
@@ -83,7 +95,7 @@ export function LoginForm() {
             <span className="border-t-2 border-r-2 border-zinc-800 border-solid h-5 w-5 rounded-full animate-spin"></span>
            </span>
           ) : (
-            "enter"
+            "login"
           )}
         </Button>
       </form>

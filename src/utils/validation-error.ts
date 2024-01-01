@@ -9,3 +9,9 @@ export class InvalidCredentialsError extends Error {
     super('Invalid credentials.')
   }
 }
+
+export class InsufficientFundsError extends Error {
+  constructor() {
+    super('It seems to you that this budget does not have enough funds to carry out this operation.')
+  }
+}

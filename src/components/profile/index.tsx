@@ -19,9 +19,7 @@ async function getUser() {
       throw new Error()
     }
 
-    const data = await response.json();
-
-    return data;
+   return response.json(); 
   } catch (err) {
     console.log(err);
   }

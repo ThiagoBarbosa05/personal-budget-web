@@ -6,6 +6,7 @@ import { DialogClose } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
 import React, { Dispatch, SetStateAction } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -19,16 +20,16 @@ export type budgetData = z.infer<typeof budgetBodySchema>
 
 export default function CreateBudgetForm({openChange}: {openChange: Dispatch<SetStateAction<boolean>>}) {
 
-  
-
   const {register, handleSubmit, formState: {errors, isSubmitting}} = useForm<budgetData>({
     resolver: zodResolver(budgetBodySchema)
   })
 
+  const router = useRouter()
 
   async function onSubmit(data: budgetData) {
     await createBudget(data)
     openChange(false)
+    router.push('/home')
   }
 
   return (

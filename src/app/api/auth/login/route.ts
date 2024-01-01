@@ -33,14 +33,15 @@ export async function POST(req: NextRequest, res: NextResponse) {
   
     cookieStore.set('next_token', data.token)
     cookieStore.set('next_refreshToken', data.refreshToken)
+      
   
-    
-    
-  
-    return Response.json(email)
+    return Response.json({})
   } catch(err) {
     if(err instanceof InvalidCredentialsError) {
-      console.log(err.message)
+      return new Response('Invalid credentials', {
+        status: 400
+      })
+      
     }
   }
   
