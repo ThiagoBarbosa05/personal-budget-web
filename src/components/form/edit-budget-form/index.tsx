@@ -8,9 +8,10 @@ import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { set, z } from "zod";
 import { useQuery} from '@tanstack/react-query'
 import { getCookie } from "cookies-next";
+import { useEffect, useState } from "react";
 
 const editBudgetBodySchema = z.object({
   description: z.string().optional(),
@@ -34,16 +35,29 @@ export function EditBudgetForm() {
   const id = pathname.split('/')[2]
   const token = getCookie('next_token')
 
-  const {data} = useQuery({queryKey: ['budgetData'],
+  const [data, setData] = useState()
 
-  queryFn: () => 
+  // const {data} = useQuery({queryKey: ['budgetData'],
+
+  // queryFn: () => 
+  //   fetch(`https://personal-budget-api-3285.onrender.com/envelopes/${id}`, {
+  //     headers: {
+  //       'Authorization': `Bearer ${token}`
+  //     },
+  //     credentials: 'include'
+  //   }).then(res => res.json())
+  // })
+
+  useEffect(() => {
     fetch(`https://personal-budget-api-3285.onrender.com/envelopes/${id}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       },
       credentials: 'include'
-    }).then(res => res.json())
-  })
+    }).then(res => res.json()).then(d => setData(d))
+  }, [])
+
+  console.log(data)
 
   async function onSubmit(data: editBudgetData) {
     await EditBudget(data, id);
@@ -83,7 +97,7 @@ export function EditBudgetForm() {
           </Button>
         </DialogClose>
 
-        <Button variant="secondary">Submit</Button>
+        <Button disabled={isSubmitting} variant="secondary">Submit</Button>
       </div>
     </form>
   );
