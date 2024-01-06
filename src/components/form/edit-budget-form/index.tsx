@@ -12,6 +12,7 @@ import { set, z } from "zod";
 import { useQuery} from '@tanstack/react-query'
 import { getCookie } from "cookies-next";
 import { useEffect, useState } from "react";
+import { BudgetById } from "@/types";
 
 const editBudgetBodySchema = z.object({
   description: z.string().optional(),
@@ -35,7 +36,7 @@ export function EditBudgetForm() {
   const id = pathname.split('/')[2]
   const token = getCookie('next_token')
 
-  const [data, setData] = useState()
+  const [data, setData] = useState<BudgetById>()
 
   // const {data} = useQuery({queryKey: ['budgetData'],
 
