@@ -36,29 +36,29 @@ export function EditBudgetForm() {
   const id = pathname.split('/')[2]
   const token = getCookie('next_token')
 
-  const [data, setData] = useState<BudgetById>()
+  // const [data, setData] = useState<BudgetById>()
 
-  // const {data} = useQuery({queryKey: ['budgetData'],
+  const {data} = useQuery({queryKey: ['budgetData'],
 
-  // queryFn: () => 
-  //   fetch(`https://personal-budget-api-3285.onrender.com/envelopes/${id}`, {
-  //     headers: {
-  //       'Authorization': `Bearer ${token}`
-  //     },
-  //     credentials: 'include'
-  //   }).then(res => res.json())
-  // })
-
-  useEffect(() => {
+  queryFn: () => 
     fetch(`https://personal-budget-api-3285.onrender.com/envelopes/${id}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       },
       credentials: 'include'
-    }).then(res => res.json()).then(d => setData(d))
-  }, [])
+    }).then(res => res.json())
+  })
 
-  console.log(data)
+  // useEffect(() => {
+  //   fetch(`https://personal-budget-api-3285.onrender.com/envelopes/${id}`, {
+  //     headers: {
+  //       'Authorization': `Bearer ${token}`
+  //     },
+  //     credentials: 'include'
+  //   }).then(res => res.json()).then(d => setData(d))
+  // }, [])
+
+  // console.log(data)
 
   async function onSubmit(data: editBudgetData) {
     await EditBudget(data, id);
