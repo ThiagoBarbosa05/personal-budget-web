@@ -1,4 +1,9 @@
-import { PencilSimpleLine, Trash } from "@phosphor-icons/react/dist/ssr";
+import {
+  CurrencyDollar,
+  PencilSimpleLine,
+  Plus,
+  Trash,
+} from "@phosphor-icons/react/dist/ssr";
 import EditTransactionDialog from "../edit-transaction";
 import { Button } from "../ui/button";
 import {
@@ -12,15 +17,53 @@ import {
 } from "../ui/table";
 import { formatCurrency } from "@/utils/format-currency";
 import DeleteTransactionAlert from "../delete-transaction";
+import CreateTransactionDialog from "../create-transaction";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
+import { formatDate } from "@/utils/format-date";
 
 interface TransactionProps {
-  budget: {
+  transactions: {
     id: string;
-    description: string;
-  };
+    payment_recipient: string;
+    payment_amount: number;
+    created_at: string;
+    updated_at: string;
+    envelope_id: string;
+  }[];
 }
 
-export default function Transaction({ budget }: TransactionProps) {
+export default function Transaction({ transactions }: TransactionProps) {
+  if (transactions.length === 0) {
+    return (
+      <div className="mt-10">
+        <Card>
+          <CardHeader className="text-center">
+            <CardTitle>
+              You do not yet have transactions for this budget
+            </CardTitle>
+            <CardDescription>
+              Click the button below to add a transaction
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-center">
+            <CreateTransactionDialog>
+              <Button variant="secondary" className="flex items-center gap-1">
+                <Plus size={16} weight="bold" />{" "}
+                <span className="font-bold">Add transaction</span>
+              </Button>
+            </CreateTransactionDialog>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <Table className="mt-6 min-w-[640px]">
       <TableHeader>
@@ -33,12 +76,14 @@ export default function Transaction({ budget }: TransactionProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
-          <TableRow key={i}>
-            <TableCell>2022-05-03</TableCell>
+        {transactions.map((transaction) => (
+          <TableRow key={transaction.id}>
+            <TableCell>{formatDate({date: transaction.created_at})}</TableCell>
 
-            <TableCell>internet</TableCell>
-            <TableCell>{formatCurrency(120.39)}</TableCell>
+            <TableCell>{transaction.payment_recipient}</TableCell>
+            <TableCell>
+              {formatCurrency(transaction.payment_amount / 100)}
+            </TableCell>
             <TableCell>
               <div className="flex items-center gap-2">
                 <EditTransactionDialog>
@@ -64,7 +109,7 @@ export default function Transaction({ budget }: TransactionProps) {
       <TableFooter>
         <TableRow>
           <TableCell className="text-center" colSpan={4}>
-            budget transactions {budget.description}
+            All transactions
           </TableCell>
         </TableRow>
       </TableFooter>

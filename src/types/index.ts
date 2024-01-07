@@ -5,6 +5,7 @@ export interface Budget {
     amount: number
     created_at: string
     updated_at: string
+    totalAmountTransactions: number
   }[]
 } 
 
@@ -15,6 +16,6 @@ export interface BudgetById {
     amount: number
     created_at: string
     updated_at: string
+    totalAmountTransactions: number
   }
 }
-

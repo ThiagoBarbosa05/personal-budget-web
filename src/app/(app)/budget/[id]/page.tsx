@@ -1,9 +1,7 @@
 import CreateTransactionDialog from "@/components/create-transaction";
 import DeleteBudgetDialog from "@/components/delete-budget";
-import DeleteTransactionAlert from "@/components/delete-transaction";
-import { DropdownMenuTransaction } from "@/components/dropdown-menu-transaction";
 import { EditBudgetDialog } from "@/components/edit-budget";
-import EditTransactionDialog from "@/components/edit-transaction";
+
 import TransferValueDialog from "@/components/tranfer-value";
 import Transaction from "@/components/transactions";
 import { Button } from "@/components/ui/button";
@@ -13,17 +11,10 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { BudgetById } from "@/types";
 import { formatCurrency } from "@/utils/format-currency";
+import { formatDate } from "@/utils/format-date";
+import { getLastTransaction } from "@/utils/get-last-transaction";
 import {
   CurrencyCircleDollar,
   PencilSimpleLine,
@@ -53,12 +44,32 @@ async function getBudgetById(id: string, token?: string): Promise<BudgetById> {
   }
 }
 
+async function getTransactions(envelopeId: string, token?: string) {
+  try {
+    const response = await fetch(
+      `https://personal-budget-api-3285.onrender.com/transactions/${envelopeId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+      }
+    );
+
+    return response.json();
+  } catch (err) {
+    throw new Error();
+  }
+}
+
 export default async function page({ params }: { params: { id: string } }) {
   const token = cookies().get("next_token")?.value;
 
   const { envelope } = await getBudgetById(params.id, token);
+  const { transactions } = await getTransactions(params.id, token);
 
-  const createdAt = dayjs(envelope.created_at).format("D MMMM YYYY");
+  const lastTransactions = getLastTransaction(transactions);
 
   return (
     <div className="px-6 py-6 max-w-7xl mx-auto">
@@ -85,7 +96,7 @@ export default async function page({ params }: { params: { id: string } }) {
               {formatCurrency(envelope.amount)}
             </strong>
             <span className="text-zinc-400 text-sm">
-              Created at: {createdAt}
+              Created at: {formatDate({ date: envelope.created_at })}
             </span>
           </CardContent>
           <CardFooter className="flex items-center gap-2">
@@ -116,10 +127,14 @@ export default async function page({ params }: { params: { id: string } }) {
           </CardHeader>
           <CardContent>
             <strong className="text-2xl block mb-1 leading-6 lg:text-4xl">
-              {formatCurrency(1200.5)}
+              {formatCurrency(envelope.totalAmountTransactions / 100)}
             </strong>
             <span className="text-zinc-400 text-sm">
-              Last transaction at May 5
+              {lastTransactions
+                ? `Last transaction at ${dayjs(
+                    lastTransactions?.created_at
+                  ).format("MMM YYYY")}`
+                : "There are no transactions for this envelope yet."}
             </span>
           </CardContent>
           <CardFooter>
@@ -132,17 +147,18 @@ export default async function page({ params }: { params: { id: string } }) {
           </CardFooter>
         </Card>
       </section>
+
       <section className="mt-6">
         <h3 className="text-zinc-100 text-3xl font-bold leading-6">
           Transactions
         </h3>
         <span className="text-zinc-400 text-sm leading-6 block mt-2">
-          Here are all the transactions in the budget $example
+          Here are all the transactions in the budget{" "}
+          <strong>${envelope.description}</strong>
         </span>
-        {/* transactions */}
-          <Transaction budget={envelope} />
-        {/* transactions */}
+        <Transaction transactions={transactions} />
       </section>
     </div>
   );
 }
+5;

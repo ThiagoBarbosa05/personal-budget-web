@@ -2,10 +2,12 @@ import { cookies } from "next/headers";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import dayjs from "dayjs";
 import { Logout } from "../logout";
+import { formatDate } from "@/utils/format-date";
 
 async function getUser() {
   try {
     const token = cookies().get("next_token")?.value;
+    const refreshToken = cookies().get("next_refreshToken")?.value;
     const response = await fetch(
       "https://personal-budget-api-3285.onrender.com/users/me",
       {
@@ -16,6 +18,18 @@ async function getUser() {
     );
 
     if(!response.ok) {
+      const response = await fetch(
+        "https://personal-budget-api-3285.onrender.com/refresh-token",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({refreshToken}),
+        }
+      );
+      const newToken = await response.json();
+      cookies().set('next_token', newToken.accessToken)
       throw new Error()
     }
 
@@ -29,7 +43,7 @@ export async function Profile({ children }: { children: React.ReactNode }) {
 
   const {user}  = await getUser();
 
-  const createdAt = dayjs(user.created_at).format("D MMMM YYYY");
+  const createdAt = formatDate({date: user.created_at})
 
   return (
     <Popover>

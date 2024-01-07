@@ -2,6 +2,7 @@ import { CreateBudgetDialog } from "@/components/create-budget-dialog";
 import Header from "@/components/header";
 import { Profile } from "@/components/profile";
 import Providers from "@/components/providers";
+import { HeaderSkeleton } from "@/components/skeletons/header";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
@@ -30,6 +31,7 @@ export default function HomeLayout({
     <Providers>
       <div>
         <Header />
+        
         {children}
       </div>
     </Providers>

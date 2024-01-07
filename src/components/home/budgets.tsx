@@ -31,14 +31,13 @@ export async function Budgets() {
   const token = cookies().get("next_token")?.value;
 
   const { envelopes } = await getBudgets(token);
-  
 
   return (
-    <section>
+    <section className="px-6">
       {envelopes.length > 0 ? (
-        <div className="px-6 mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {envelopes.map((budget) => {
-            const amount = budget.amount / 100
+            const amount = budget.amount / 100;
 
             return (
               <Link
@@ -60,7 +59,8 @@ export async function Budgets() {
                       {formatCurrency(amount)}
                     </strong>
                     <span className="text-zinc-400 text-sm">
-                      Last transaction at May 5
+                      Transactions amount{" "}
+                      {formatCurrency(budget.totalAmountTransactions / 100)}
                     </span>
                   </CardContent>
                 </Card>
@@ -69,7 +69,7 @@ export async function Budgets() {
           })}
         </div>
       ) : (
-        <Card className="max-w-[1200px] mt-8 mx-6">
+        <Card className="max-w-[1200px] mx-auto mt-8">
           <CardHeader className="text-lg md:text-2xl lg:text-3xl">
             <CurrencyDollar />
           </CardHeader>

@@ -1,5 +1,6 @@
 "use server";
 
+import { TransactionData } from "@/components/create-transaction";
 import { budgetData } from "@/components/form/create-budget-form";
 import { editBudgetData } from "@/components/form/edit-budget-form";
 import { InsufficientFundsError } from "@/utils/validation-error";
@@ -10,6 +11,10 @@ interface TransferValueParams {
   amountToUpdate: number;
   originId: string;
   destinationId: string;
+}
+
+interface Transaction extends TransactionData {
+  envelopeId: string;
 }
 
 export async function createBudget(data: budgetData) {
@@ -36,7 +41,7 @@ export async function EditBudget(data: editBudgetData, id: string) {
   const token = cookies().get("next_token")?.value;
 
   try {
-    await fetch(
+    const response = await fetch(
       `https://personal-budget-api-3285.onrender.com/envelopes/${id}`,
       {
         method: "PUT",
@@ -48,9 +53,19 @@ export async function EditBudget(data: editBudgetData, id: string) {
         body: JSON.stringify(data),
       }
     );
-    revalidatePath("/home");
+
+    if (response.status === 400) {
+      throw new InsufficientFundsError();
+    }
+
+    revalidatePath(`/budget/${id}`);
   } catch (err) {
-    throw new Error();
+    if (err instanceof InsufficientFundsError) {
+      return {
+        message:
+          "The value to be updated cannot be less than the total number of transactions",
+      };
+    }
   }
 }
 
@@ -106,5 +121,41 @@ export async function deleteBudget(budgetId: string) {
     revalidatePath("/home");
   } catch (err) {
     throw new Error();
+  }
+}
+
+export async function createTransaction(data: Transaction) {
+  const token = cookies().get("next_token")?.value;
+
+  try {
+    const res = await fetch(
+      "https://personal-budget-api-3285.onrender.com/transactions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          payment_recipient: data.payment_recipient,
+          payment_amount: data.payment_amount,
+          envelope_id: data.envelopeId,
+        }),
+      }
+    );
+
+    if(res.status === 400) {
+      throw new InsufficientFundsError()
+    }
+
+    revalidatePath(`/budget/${data.envelopeId}`);
+  } catch (err) {
+    if (err instanceof InsufficientFundsError) {
+      return {
+        message:
+          "The value to be updated cannot be less than the total number of transactions",
+      };
+    }
   }
 }
