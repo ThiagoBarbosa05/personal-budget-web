@@ -1,8 +1,8 @@
 "use server";
 
+import { budgetData } from "@/components/create-budget-dialog";
 import { TransactionData } from "@/components/create-transaction";
-import { budgetData } from "@/components/form/create-budget-form";
-import { editBudgetData } from "@/components/form/edit-budget-form";
+import { editBudgetData } from "@/components/edit-budget";
 import { InsufficientFundsError } from "@/utils/validation-error";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
