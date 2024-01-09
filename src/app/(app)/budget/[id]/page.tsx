@@ -2,7 +2,7 @@ import CreateTransactionDialog from "@/components/create-transaction";
 import DeleteBudgetDialog from "@/components/delete-budget";
 import { EditBudgetDialog } from "@/components/edit-budget";
 
-import TransferValueDialog from "@/components/tranfer-value";
+import TransferValueDialog from "@/components/transfer-value";
 import Transaction from "@/components/transactions";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +17,7 @@ import { formatDate } from "@/utils/format-date";
 import { getLastTransaction } from "@/utils/get-last-transaction";
 import {
   CurrencyCircleDollar,
+  CurrencyDollarSimple,
   PencilSimpleLine,
   Plus,
   ShuffleAngular,
@@ -24,6 +25,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import dayjs from "dayjs";
 import { cookies } from "next/headers";
+import { Metadata } from "next";
 
 async function getBudgetById(id: string, token?: string): Promise<BudgetById> {
   try {
@@ -60,6 +62,15 @@ async function getTransactions(envelopeId: string, token?: string) {
     return response.json();
   } catch (err) {
     throw new Error();
+  }
+}
+
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  const token = cookies().get("next_token")?.value;
+  const budget = await getBudgetById(params.id, token)
+
+  return {
+    title: budget.envelope.description
   }
 }
 
@@ -100,7 +111,7 @@ export default async function page({ params }: { params: { id: string } }) {
             </span>
           </CardContent>
           <CardFooter className="flex items-center gap-2">
-            <EditBudgetDialog>
+            <EditBudgetDialog budget={envelope}>
               <Button className="flex items-center gap-1" variant="outline">
                 <PencilSimpleLine size={16} />
                 edit
@@ -134,7 +145,7 @@ export default async function page({ params }: { params: { id: string } }) {
                 ? `Last transaction at ${dayjs(
                     lastTransactions?.created_at
                   ).format("MMM YYYY")}`
-                : "There are no transactions for this envelope yet."}
+                : "There are no transactions for this budget yet."}
             </span>
           </CardContent>
           <CardFooter>
@@ -152,9 +163,9 @@ export default async function page({ params }: { params: { id: string } }) {
         <h3 className="text-zinc-100 text-3xl font-bold leading-6">
           Transactions
         </h3>
-        <span className="text-zinc-400 text-sm leading-6 block mt-2">
-          Here are all the transactions in the budget{" "}
-          <strong>${envelope.description}</strong>
+        <span className="text-zinc-400 text-sm leading-6 mt-2 flex items-center">
+          Here are all the transactions in the budget:{" "}
+          <strong className="flex items-center text-zinc-100"><span className="text-[#00B37E] text-base ml-1"><CurrencyDollarSimple weight="bold" /></span>{envelope.description}</strong>
         </span>
         <Transaction transactions={transactions} />
       </section>

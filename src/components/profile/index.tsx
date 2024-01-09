@@ -18,18 +18,18 @@ async function getUser() {
     );
 
     if(!response.ok) {
-      const response = await fetch(
-        "https://personal-budget-api-3285.onrender.com/refresh-token",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({refreshToken}),
-        }
-      );
-      const newToken = await response.json();
-      cookies().set('next_token', newToken.accessToken)
+      // const response = await fetch(
+      //   "https://personal-budget-api-3285.onrender.com/refresh-token",
+      //   {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //     },
+      //     body: JSON.stringify({refreshToken}),
+      //   }
+      // );
+      // const newToken = await response.json();
+      // cookies().set('next_token', newToken.accessToken)
       throw new Error()
     }
 

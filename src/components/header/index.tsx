@@ -13,9 +13,9 @@ export default function Header() {
   return (
     <header className="p-6 flex items-center justify-between">
       <Link href='/home'>
-        <div className="flex items-center gap-2">
-          <CurrencyDollarSimple color="#00B37E" size={24} weight="bold" />
-          <span className="text-xl md:text-2xl font-bold">Personal Budget</span>
+        <div className="flex items-center gap-2 text-xl md:text-2xl">
+          <CurrencyDollarSimple color="#00B37E" weight="bold" />
+          <span className="font-bold">Personal Budget</span>
         </div>
       </Link>
 

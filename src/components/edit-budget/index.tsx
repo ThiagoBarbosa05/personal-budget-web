@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { usePathname } from "next/navigation";
 import { Button } from "../ui/button";
@@ -20,19 +20,26 @@ import { getCookie } from "cookies-next";
 import { useQuery } from "@tanstack/react-query";
 import { EditBudget } from "@/app/actions";
 
+interface EditBudgetDialogProps {
+  budget: {
+    id: string;
+    description: string;
+    amount: number;
+    created_at: string;
+    updated_at: string;
+    totalAmountTransactions: number;
+  };
+  children: React.ReactNode
+}
+
 const editBudgetBodySchema = z.object({
-  description: z.string().optional(),
-  amount: z.coerce.number().optional(),
+  description: z.string().min(1, {message: 'Please enter a budget description.'}),
+  amount: z.coerce.number().min(0.01, {message: 'Amount cannot be zero or empty.'}),
 });
 
 export type editBudgetData = z.infer<typeof editBudgetBodySchema>;
 
-export function EditBudgetDialog({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-
+export function EditBudgetDialog({budget, children}: EditBudgetDialogProps) {
   const {
     register,
     handleSubmit,
@@ -41,42 +48,23 @@ export function EditBudgetDialog({
     resolver: zodResolver(editBudgetBodySchema),
   });
 
-  const [messageError, setMessageError] = useState<string>()
-  const [isOpen, setIsOpen] = useState(false)
-
-  const pathname = usePathname()
-  const id = pathname.split('/')[2]
-  const token = getCookie('next_token')
-
-
-  const {data, isLoading} = useQuery({queryKey: ['budgetData'],
-
-  queryFn: () => 
-    fetch(`https://personal-budget-api-3285.onrender.com/envelopes/${id}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      },
-      credentials: 'include'
-    }).then(res => res.json())
-  })
+  const [messageError, setMessageError] = useState<string>();
+  const [isOpen, setIsOpen] = useState(false);
 
   async function onSubmit(data: editBudgetData) {
     try {
-                
-      const res = await EditBudget(data, id);
-      
-      if(res) {
-        setMessageError(res.message)
+      const res = await EditBudget(data, budget.id);
+
+      if (!res) {
+        setIsOpen(false);
       }
 
-      setIsOpen(false)
-                    
-    } catch(err) {
-      throw new Error()
+      setMessageError(res?.message);
+    } catch (err) {
+      throw new Error();
     }
-
   }
-  
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -89,42 +77,46 @@ export function EditBudgetDialog({
         </DialogDescription>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-      <div className="text-zinc-100">
-        <Label htmlFor="description">Description of the budget:</Label>
-        <Input
-          className="text-zinc-100 mt-1"
-          placeholder="Description"
-          {...register("description")}
-          id="description"
-          defaultValue={data?.envelope.description}
-          disabled={isLoading}
-        />
-      </div>
-      <div className="text-zinc-100">
-        <Label htmlFor="amount">Amount:</Label>
-        <Input
-          className="text-zinc-100 mt-1"
-          placeholder="ex: 120.50"
-          id="amount"
-          type="number"
-          step="0.01"
-          pattern="\d+\.\d{2}"
-          {...register("amount")}
-          defaultValue={data?.envelope.amount}
-          disabled={isLoading}
-        />
-      </div>
-      {messageError && <span className="text-red-500">{messageError}</span>}
-      <div className="w-full flex items-center justify-end gap-2">
-        <DialogClose asChild>
-          <Button className="text-zinc-100" variant="outline">
-            Cancel
-          </Button>
-        </DialogClose>
+          <div className="text-zinc-100">
+            <Label htmlFor="description">Description of the budget:</Label>
+            <Input
+              className="text-zinc-100 mt-1"
+              placeholder="Description"
+              {...register("description")}
+              id="description"
+              defaultValue={budget.description}
+            />
+            {errors && <span className="text-red-500 text-sm">{errors.description?.message}</span>}
+          </div>
+          <div className="text-zinc-100">
+            <Label htmlFor="amount">Amount:</Label>
+            <Input
+              className="text-zinc-100 mt-1"
+              placeholder="ex: 120.50"
+              id="amount"
+              type="number"
+              step="0.01"
+              pattern="\d+\.\d{2}"
+              {...register("amount")}
+              defaultValue={budget.amount}
+            />
+            {errors && <span className="text-red-500 text-sm">{errors.amount?.message}</span>}
+          </div>
+          {messageError && (
+            <span className="text-red-500 text-sm">{messageError}</span>
+          )}
+          <div className="w-full flex items-center justify-end gap-2">
+            <DialogClose asChild>
+              <Button className="text-zinc-100" variant="outline">
+                Cancel
+              </Button>
+            </DialogClose>
 
-        <Button  disabled={isSubmitting} variant="secondary">Submit</Button>
-      </div>
-    </form>
+            <Button disabled={isSubmitting} variant="secondary">
+              Submit
+            </Button>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

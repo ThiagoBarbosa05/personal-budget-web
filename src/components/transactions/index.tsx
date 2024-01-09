@@ -78,7 +78,9 @@ export default function Transaction({ transactions }: TransactionProps) {
       <TableBody>
         {transactions.map((transaction) => (
           <TableRow key={transaction.id}>
-            <TableCell>{formatDate({date: transaction.created_at})}</TableCell>
+            <TableCell>
+              {formatDate({ date: transaction.created_at })}
+            </TableCell>
 
             <TableCell>{transaction.payment_recipient}</TableCell>
             <TableCell>
@@ -86,13 +88,12 @@ export default function Transaction({ transactions }: TransactionProps) {
             </TableCell>
             <TableCell>
               <div className="flex items-center gap-2">
-                <EditTransactionDialog>
+                <EditTransactionDialog transaction={transaction}>
                   <Button size="icon" variant="outline">
                     <PencilSimpleLine size={16} />
                   </Button>
                 </EditTransactionDialog>
-
-                <DeleteTransactionAlert>
+                <DeleteTransactionAlert transactionId={transaction.id}>
                   <Button
                     className="text-red-500"
                     size="icon"

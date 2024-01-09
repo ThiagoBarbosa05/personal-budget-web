@@ -3,6 +3,7 @@
 import { budgetData } from "@/components/create-budget-dialog";
 import { TransactionData } from "@/components/create-transaction";
 import { editBudgetData } from "@/components/edit-budget";
+import { EditTransactionData } from "@/components/edit-transaction";
 import { InsufficientFundsError } from "@/utils/validation-error";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
@@ -15,6 +16,11 @@ interface TransferValueParams {
 
 interface Transaction extends TransactionData {
   envelopeId: string;
+}
+
+interface EditTransactionParams extends EditTransactionData {
+  envelopeId: string;
+  transactionId: string;
 }
 
 export async function createBudget(data: budgetData) {
@@ -145,8 +151,8 @@ export async function createTransaction(data: Transaction) {
       }
     );
 
-    if(res.status === 400) {
-      throw new InsufficientFundsError()
+    if (res.status === 400) {
+      throw new InsufficientFundsError();
     }
 
     revalidatePath(`/budget/${data.envelopeId}`);
@@ -157,5 +163,53 @@ export async function createTransaction(data: Transaction) {
           "The value to be updated cannot be less than the total number of transactions",
       };
     }
+  }
+}
+
+export async function EditTransaction(data: EditTransactionParams) {
+  const token = cookies().get("next_token")?.value;
+
+  try {
+    const response = await fetch(
+      `https://personal-budget-api-3285.onrender.com/transactions/${data.envelopeId}/${data.transactionId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+        body: JSON.stringify({payment_recipient: data.payment_recipient, payment_amount: data.payment_amount}),
+      }
+    );
+
+    if (response.status === 400) {
+      throw new InsufficientFundsError();
+    }
+
+    revalidatePath(`/budget/${data.envelopeId}`);
+  } catch (err) {
+    if (err instanceof InsufficientFundsError) {
+      return {
+        message:
+          "The transaction value cannot be greater than the budget value",
+      };
+    }
+  }
+}
+
+export async function deleteTransaction(transactionId: string) {
+  try {
+    await fetch(
+      `https://personal-budget-api-3285.onrender.com/transactions/${transactionId}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      }
+    );
+
+    revalidatePath("/budget/:path*");
+  } catch (err) {
+    throw new Error();
   }
 }

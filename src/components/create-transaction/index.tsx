@@ -19,7 +19,7 @@ import { createTransaction } from "@/app/actions";
 import { usePathname } from "next/navigation";
 
 const transactionBodySchema = z.object({
-  payment_recipient: z.string(),
+  payment_recipient: z.string().min(1, {message: 'payment recipient is required.'}),
   payment_amount: z.coerce
     .number()
     .min(0.1, { message: "The transaction value cannot be less than zero" }),
@@ -50,11 +50,11 @@ export default function CreateTransactionDialog({
   async function onSubmit(data: TransactionData) {
     const res = await createTransaction({ ...data, envelopeId });
 
-    if (res) {
-      setMessageError(res.message);
+    if (!res) {
+      setIsOpen(false)
     }
 
-    setIsOpen(false)
+    setMessageError(res?.message);
   }
 
   return (
@@ -75,9 +75,10 @@ export default function CreateTransactionDialog({
             <Input
               className="text-zinc-100 mt-1"
               placeholder="Payment recipient"
-              id="payment"
+              id="payment-recipient"
               {...register("payment_recipient")}
             />
+            {errors && <span className="text-red-500 text-sm">{errors.payment_recipient?.message}</span>}
           </div>
           <div className="text-zinc-100">
             <Label htmlFor="payment-amount">Payment amount:</Label>
@@ -90,6 +91,7 @@ export default function CreateTransactionDialog({
               pattern="\d+\.\d{2}"
               {...register("payment_amount")}
             />
+            {errors && <span className="text-red-500 text-sm">{errors.payment_amount?.message}</span>}
           </div>
           {messageError && <span className="text-red-500">{messageError}</span>}
           <div className="w-full flex items-center justify-end gap-2">
@@ -99,7 +101,7 @@ export default function CreateTransactionDialog({
               </Button>
             </DialogClose>
 
-            <Button variant="secondary">Submit</Button>
+            <Button disabled={isSubmitting} variant="secondary">Submit</Button>
           </div>
         </form>
       </DialogContent>

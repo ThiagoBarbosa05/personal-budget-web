@@ -19,8 +19,8 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 
 const budgetBodySchema = z.object({
-  description: z.string(),
-  amount: z.coerce.number()
+  description: z.string().min(1, {message: "Invalid description."}),
+  amount: z.coerce.number().min(0.01, {message: "Invalid amount."}),
 })
 
 export type budgetData = z.infer<typeof budgetBodySchema>
@@ -67,7 +67,7 @@ export function CreateBudgetDialog({
               id="description"
               {...register('description')}
             />
-            <span>{errors.description?.message}</span>
+            <span className="text-red-500 text-sm">{errors.description?.message}</span>
           </div>
           <div className="text-zinc-100">
             <Label htmlFor="amount">Amount:</Label>
@@ -80,7 +80,7 @@ export function CreateBudgetDialog({
               pattern="\d+\.\d{2}"
               {...register('amount')}
             />
-            <span>{errors.amount?.message}</span>
+            <span className="text-red-500 text-sm">{errors.amount?.message}</span>
           </div>
 
           <div className="w-full flex items-center justify-end gap-2">
