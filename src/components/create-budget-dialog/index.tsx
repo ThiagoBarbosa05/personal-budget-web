@@ -28,7 +28,7 @@ export type budgetData = z.infer<typeof budgetBodySchema>
 export function CreateBudgetDialog({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
 
   const [isOpen, setIsOpen] = useState(false)
