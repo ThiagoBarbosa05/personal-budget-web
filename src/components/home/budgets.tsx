@@ -12,7 +12,7 @@ import { cookies } from "next/headers";
 async function getBudgets(token?: string): Promise<Budget> {
   try {
     const response = await fetch(
-      "https://personal-budget-api-3285.onrender.com/envelopes",
+      `${process.env.BASE_API_URL}/envelopes`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

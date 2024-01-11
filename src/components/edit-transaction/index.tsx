@@ -14,9 +14,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { getCookie } from "cookies-next";
-import { useQuery } from "@tanstack/react-query";
-import { EditTransaction, deleteTransaction } from "@/app/actions";
+import { EditTransaction } from "@/app/actions";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
@@ -58,30 +56,26 @@ export default function EditTransactionDialog({
   const pathname = usePathname();
   const envelopeId = pathname.split("/")[2];
 
-  const [messageError, setMessageError] = useState<string>()
-  const [isOpen, setIsOpen] = useState(false)
+  const [messageError, setMessageError] = useState<string>();
+  const [isOpen, setIsOpen] = useState(false);
 
   async function onSubmit(data: EditTransactionData) {
     try {
-      const res =  await EditTransaction({
+      const res = await EditTransaction({
         ...data,
         envelopeId,
         transactionId: transaction.id,
       });
 
-      if(!res) {
-        setIsOpen(false)
+      if (!res) {
+        setIsOpen(false);
       }
 
-      setMessageError(res?.message)
-
+      setMessageError(res?.message);
     } catch (err) {
-      throw new Error()
+      throw new Error();
     }
-   
   }
-
-  
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -104,7 +98,11 @@ export default function EditTransactionDialog({
               defaultValue={transaction.payment_recipient}
               {...register("payment_recipient")}
             />
-            {errors && <span className="text-red-500 text-sm">{errors.payment_recipient?.message}</span>}
+            {errors && (
+              <span className="text-red-500 text-sm">
+                {errors.payment_recipient?.message}
+              </span>
+            )}
           </div>
           <div className="text-zinc-100">
             <Label htmlFor="payment-amount">Payment amount:</Label>
@@ -118,9 +116,15 @@ export default function EditTransactionDialog({
               defaultValue={(transaction.payment_amount / 100).toFixed(2)}
               {...register("payment_amount")}
             />
-            {errors && <span className="text-red-500 text-sm">{errors.payment_amount?.message}</span>}
+            {errors && (
+              <span className="text-red-500 text-sm">
+                {errors.payment_amount?.message}
+              </span>
+            )}
           </div>
-          {messageError && <span className="text-red-500 text-sm">{messageError}</span>}
+          {messageError && (
+            <span className="text-red-500 text-sm">{messageError}</span>
+          )}
 
           <div className="w-full flex items-center justify-end gap-2">
             <DialogClose asChild>
@@ -129,7 +133,9 @@ export default function EditTransactionDialog({
               </Button>
             </DialogClose>
 
-            <Button disabled={isSubmitting} variant="secondary">Submit</Button>
+            <Button disabled={isSubmitting} variant="secondary">
+              Submit
+            </Button>
           </div>
         </form>
       </DialogContent>

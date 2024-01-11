@@ -66,13 +66,14 @@ export default function TransferValueDialog({
     queryKey: ["budgetsData"],
 
     queryFn: () =>
-      fetch(`https://personal-budget-api-3285.onrender.com/envelopes`, {
+      fetch(`${process.env.NEXT_PUBLIC_BASE_API_URL}/envelopes`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
         credentials: "include",
       }).then((res) => res.json()) as Promise<Budget>,
   });
+
 
   async function onSubmit(data: TransferValue) {
     const { amountToUpdate, destinationId } = data;

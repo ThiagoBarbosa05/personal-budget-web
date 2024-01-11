@@ -23,7 +23,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     };
   
     const response = await fetch(
-      "https://personal-budget-api-3285.onrender.com/register",
+      `${process.env.BASE_API_URL}/register`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

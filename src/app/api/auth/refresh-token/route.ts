@@ -21,7 +21,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
   try {
     if (decodedToken.exp * 1000 - Date.now() < expirationLimit) {
       const response = await fetch(
-        "https://personal-budget-api-3285.onrender.com/refresh-token",
+        `${process.env.BASE_API_URL}/refresh-token`,
         {
           method: "POST",
           headers: {

@@ -1,5 +1,4 @@
 import {
-  CurrencyDollar,
   PencilSimpleLine,
   Plus,
   Trash,

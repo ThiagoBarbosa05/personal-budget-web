@@ -30,7 +30,7 @@ import { Metadata } from "next";
 async function getBudgetById(id: string, token?: string): Promise<BudgetById> {
   try {
     const response = await fetch(
-      `https://personal-budget-api-3285.onrender.com/envelopes/${id}`,
+      `${process.env.BASE_API_URL}/envelopes/${id}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -49,7 +49,7 @@ async function getBudgetById(id: string, token?: string): Promise<BudgetById> {
 async function getTransactions(envelopeId: string, token?: string) {
   try {
     const response = await fetch(
-      `https://personal-budget-api-3285.onrender.com/transactions/${envelopeId}`,
+      `${process.env.BASE_API_URL}/transactions/${envelopeId}`,
       {
         headers: {
           "Content-Type": "application/json",

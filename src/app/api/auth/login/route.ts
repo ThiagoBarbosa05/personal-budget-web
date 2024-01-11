@@ -17,7 +17,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       email, password
     }
   
-    const response = await fetch('https://personal-budget-api-3285.onrender.com/login', {
+    const response = await fetch(`${process.env.BASE_API_URL}/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json'},
       body: JSON.stringify(dataUserToSend)

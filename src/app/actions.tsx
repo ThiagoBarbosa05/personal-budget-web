@@ -27,7 +27,7 @@ export async function createBudget(data: budgetData) {
   const token = cookies().get("next_token")?.value;
 
   try {
-    await fetch("https://personal-budget-api-3285.onrender.com/envelopes", {
+    await fetch(`${process.env.BASE_API_URL}/envelopes`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -48,7 +48,7 @@ export async function EditBudget(data: editBudgetData, id: string) {
 
   try {
     const response = await fetch(
-      `https://personal-budget-api-3285.onrender.com/envelopes/${id}`,
+      `${process.env.BASE_API_URL}/envelopes/${id}`,
       {
         method: "PUT",
         headers: {
@@ -84,7 +84,7 @@ export async function transferValue({
     const token = cookies().get("next_token")?.value;
 
     const response = await fetch(
-      `https://personal-budget-api-3285.onrender.com/envelopes/transfer/${originId}/${destinationId}`,
+      `${process.env.BASE_API_URL}/envelopes/transfer/${originId}/${destinationId}`,
       {
         method: "POST",
         headers: {
@@ -113,7 +113,7 @@ export async function deleteBudget(budgetId: string) {
 
   try {
     await fetch(
-      `https://personal-budget-api-3285.onrender.com/envelopes/${budgetId}`,
+      `${process.env.BASE_API_URL}/envelopes/${budgetId}`,
       {
         method: "DELETE",
         headers: {
@@ -135,7 +135,7 @@ export async function createTransaction(data: Transaction) {
 
   try {
     const res = await fetch(
-      "https://personal-budget-api-3285.onrender.com/transactions",
+      `${process.env.BASE_API_URL}/transactions`,
       {
         method: "POST",
         headers: {
@@ -171,7 +171,7 @@ export async function EditTransaction(data: EditTransactionParams) {
 
   try {
     const response = await fetch(
-      `https://personal-budget-api-3285.onrender.com/transactions/${data.envelopeId}/${data.transactionId}`,
+      `${process.env.BASE_API_URL}/transactions/${data.envelopeId}/${data.transactionId}`,
       {
         method: "PUT",
         headers: {
@@ -201,7 +201,7 @@ export async function EditTransaction(data: EditTransactionParams) {
 export async function deleteTransaction(transactionId: string) {
   try {
     await fetch(
-      `https://personal-budget-api-3285.onrender.com/transactions/${transactionId}`,
+      `${process.env.BASE_API_URL}/transactions/${transactionId}`,
       {
         method: "DELETE",
         credentials: "include",
