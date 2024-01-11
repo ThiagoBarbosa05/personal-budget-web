@@ -160,7 +160,7 @@ export async function createTransaction(data: Transaction) {
     if (err instanceof InsufficientFundsError) {
       return {
         message:
-          "The value to be updated cannot be less than the total number of transactions",
+          "The transaction value cannot be greater than the total budget value.",
       };
     }
   }
