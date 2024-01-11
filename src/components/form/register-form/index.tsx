@@ -28,7 +28,7 @@ export function RegisterForm() {
   const {
     handleSubmit,
     register,
-    formState: { errors, isSubmitting, isSubmitted },
+    formState: { errors, isSubmitting },
   } = useForm<Register>({
     resolver: zodResolver(registerSchema),
   });
@@ -103,7 +103,7 @@ export function RegisterForm() {
         </div>
 
         <Button disabled={isSubmitting}>
-          {isSubmitting || isSubmitted ? (
+          {isSubmitting ? (
            <span className="flex items-center justify-center">
             <span className="border-t-2 border-r-2 border-zinc-800 border-solid h-5 w-5 rounded-full animate-spin"></span>
            </span>
