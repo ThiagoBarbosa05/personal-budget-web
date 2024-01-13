@@ -4,6 +4,6 @@ Essa é uma simples aplicação de orçamento pessoal, onde o usuário pode cria
 
 <div>
 <img width="220px" src="./public/mobile.png" />
-<img width="220px" src="./public/desktop-cover.png" /> 
+<img width="520px" src="./public/desktop-cover.png" /> 
 </div>
 
