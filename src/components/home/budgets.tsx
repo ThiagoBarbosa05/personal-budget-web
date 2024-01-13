@@ -42,16 +42,16 @@ export async function Budgets() {
             return (
               <Link
                 key={budget.id}
-                className="rounded-md"
+                className="rounded-md mx-h-[174px] overflow-hidden"
                 href={`/budget/${budget.id}`}
               >
                 <Card className="hover:bg-zinc-900">
                   <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <span className="leading-6 font-bold lg:text-2xl">
-                        {budget.description}
+                    <div className="flex items-center justify-between ">
+                      <span className="leading-6 block font-bold lg:text-2xl whitespace-nowrap overflow-hidden mr-2">
+                        {budget.description.length > 30 ? budget.description.substring(0, 30).concat('...') : budget.description}
                       </span>
-                      <CurrencyDollar size={20} />
+                      <CurrencyDollar className="min-w-max" size={20} />
                     </div>
                   </CardHeader>
                   <CardContent>
