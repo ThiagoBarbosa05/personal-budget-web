@@ -16,23 +16,7 @@ async function getUser() {
       }
     );
 
-    if(!response.ok) {
-      const response = await fetch(
-        `${process.env.BASE_API_URL}/refresh-token`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({refreshToken}),
-        }
-      );
-      const newToken = await response.json();
-      cookies().set('next_token', newToken.accessToken)
-      throw new Error()
-    }
-
-   return response.json(); 
+    return response.json();
   } catch (err) {
     console.log(err);
   }

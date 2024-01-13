@@ -2,37 +2,30 @@
 import { LoginForm } from "@/components/form/login-form";
 import { RegisterForm } from "@/components/form/register-form";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import {
-  CurrencyDollarSimple,
-  Warning,
-} from "@phosphor-icons/react/dist/ssr";
+import { CurrencyDollarSimple, Warning } from "@phosphor-icons/react/dist/ssr";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import React from "react";
 
 export default function page() {
+  const cookie = cookies().get("next_token");
 
-  const cookie  = cookies().get('next_token')
-
-  if(cookie) {
-    redirect('/home')
+  if (cookie) {
+    redirect("/home");
   }
 
   return (
     <div className="min-h-screen p-6 w-full max-w-[480px] mx-auto flex flex-col justify-center">
-     
       <div className="text-2xl sm:text-3xl flex items-center justify-center mb-6 gap-2">
         <CurrencyDollarSimple color="#00B37E" weight="bold" />
         <span className=" font-bold">Personal Budget</span>
@@ -55,6 +48,18 @@ export default function page() {
               </p>
               <LoginForm />
             </CardContent>
+            <CardFooter>
+              <Alert>
+                <Warning size={16} />
+                <AlertTitle>Warning!</AlertTitle>
+                <AlertDescription>
+                  If there is an error when logging in or registering, it is
+                  because the server is being started, as the application is
+                  hosted on a free Render account. Reload the page or wait a few
+                  seconds and enter the data again
+                </AlertDescription>
+              </Alert>
+            </CardFooter>
           </Card>
         </TabsContent>
 
