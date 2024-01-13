@@ -11,12 +11,12 @@ export async function middleware(request: NextRequest) {
   const refreshToken = cookies().get("next_refreshToken")?.value;
   const token = cookies().get("next_token")?.value;
 
+  if (!token) {
+    NextResponse.json({ message: "invalid token." });
+  }
+
   const decodedToken = decode(token!) as JwtPayload;
   const expirationLimit = 5 * 60 * 1000;
-
-  if(!token) {
-      NextResponse.json({message: 'invalid token.'})
-  }
 
   if (token && decodedToken.exp * 1000 - Date.now() < expirationLimit) {
     try {
@@ -27,7 +27,7 @@ export async function middleware(request: NextRequest) {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({refreshToken}),
+          body: JSON.stringify({ refreshToken }),
         }
       );
 
@@ -37,19 +37,13 @@ export async function middleware(request: NextRequest) {
 
       const newToken = await response.json();
 
-      const nextResponse = NextResponse.next()
+      const nextResponse = NextResponse.next();
 
-      nextResponse.cookies.set('next_token', newToken.accessToken)
+      nextResponse.cookies.set("next_token", newToken.accessToken);
 
-      return nextResponse
+      return nextResponse;
     } catch (err) {
       console.log(err);
     }
   }
- 
-}
-
-
-export const config = {
-  matcher: ['/home/:path*', '/budget/:path*'],
 }

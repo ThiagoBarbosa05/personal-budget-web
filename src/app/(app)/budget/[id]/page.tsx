@@ -65,13 +65,17 @@ async function getTransactions(envelopeId: string, token?: string) {
   }
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata> {
   const token = cookies().get("next_token")?.value;
-  const budget = await getBudgetById(params.id, token)
+  const budget = await getBudgetById(params.id, token);
 
   return {
-    title: budget.envelope.description
-  }
+    title: budget.envelope.description,
+  };
 }
 
 export default async function page({ params }: { params: { id: string } }) {
@@ -160,16 +164,14 @@ export default async function page({ params }: { params: { id: string } }) {
       </section>
 
       <section className="mt-6">
-        <h3 className="text-zinc-100 text-3xl font-bold leading-6">
+        <h3 className="text-zinc-100 text-3xl font-bold leading-6 pb-2">
           Transactions
         </h3>
-        <span className="text-zinc-400 text-sm leading-6 mt-2 flex items-center">
-          Here are all the transactions in the budget:{" "}
-          <strong className="flex items-center text-zinc-100"><span className="text-[#00B37E] text-base ml-1"><CurrencyDollarSimple weight="bold" /></span>{envelope.description}</strong>
+        <span className="text-zinc-400 text-sm leading-6">
+          Here are all the transactions in the budget.
         </span>
         <Transaction transactions={transactions} />
       </section>
     </div>
   );
 }
-5;
